@@ -1,0 +1,18 @@
+.voice-controls {
+  margin-bottom: 1em;
+  display: flex;
+  gap: 0.5em;
+  flex-wrap: wrap;
+}
+.voice-controls button {
+  padding: 6px 12px;
+  font-size: 0.9em;
+  cursor: pointer;
+  border: none;
+  background-color: #222;
+  color: lime;
+  border-radius: 4px;
+}
+.voice-controls button:hover {
+  background-color: #444;
+}

@@ -1,0 +1,19 @@
+.voice-entry[data-admin="true"] {
+  border-left: 4px solid gold;
+  background-color: #1a1a1a;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+  position: relative;
+}
+
+.voice-entry[data-admin="true"]::before {
+  content: "🜂 Admin-Stimme";
+  position: absolute;
+  top: -1.2em;
+  left: 0;
+  font-size: 0.8em;
+  color: gold;
+  background: #111;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-style: italic;
+}
