@@ -1,1 +1,322 @@
-empty
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>tradebook</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #eee;
+      font-family: monospace;
+      padding: 20px;
+    }
+    input, select, button {
+      padding: 6px;
+      margin: 4px;
+      background-color: #222;
+      color: #eee;
+      border: 1px solid #444;
+    }
+    .voice-box {
+      border: 1px solid #555;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    .voice-box.long {
+      background-color: #003300;
+      border-color: #00cc66;
+    }
+    .voice-box.short {
+      background-color: #330000;
+      border-color: #ff3333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #222;
+      cursor: pointer;
+    }
+    svg.flame {
+      width: 24px;
+      height: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🜂 Stimme speichern 💾</h1>
+
+  <div>
+    <input type="text" id="username" placeholder="Username">
+    <input type="text" id="entry" placeholder="Entry">
+    <input type="text" id="leverage" placeholder="Leverage">
+    <input type="text" id="size" placeholder="Size">
+    <input type="text" id="liq" placeholder="Liq">
+    <input type="text" id="pnl" placeholder="PnL">
+    <input type="text" id="roi" placeholder="ROI">
+    <select id="direction">
+      <option value="LONG">LONG</option>
+      <option value="SHORT">SHORT</option>
+    </select>
+    <button onclick="saveVoiceHandler()">Stimme speichern 💾</button>
+<button onclick="exportVoicesHandler()">Export JSON ✉️</button>
+<input type="file" onchange="restoreVoicesHandler(this)">
+    
+  <p style="margin-bottom: 10px;">
+  <a href="https://codexboru.github.io/codexarkham" target="_blank" style="color:#00ccff; text-decoration:none; border:1px solid #444; padding:4px 8px; background-color:#222;">
+    ↗ CodexArkham ETH öffnen
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://codexboru.github.io/codex-initiation/" target="_blank" style="color:#ff66cc; text-decoration:none; border:1px solid #444; padding:4px 8px; background-color:#222;">
+    🜂 CODEX öffnen
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://github.com/codexboru" target="_blank" style="color:#ffcc00; text -decoration:none; border:1px solid #444; padding:4px 8px; background-color:#222;">
+    🜁 GitHub: codexboru
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://sosyal.teknofest.app/@borugithub" target="_blank" style="color:#66ffff; text-decoration:none; border:1px solid #444; padding:4px 8px; background-color:#222;">
+    🜃 Sosyal_teknofest: borugithub
+  </a>
+  </p>
+    
+</div>
+
+  <h2>📈 Chart</h2>
+  <div class="tradingview-widget-container">
+    <div id="tradingview_chart"></div>
+    <script src="https://s3.tradingview.com/tv.js"></script>
+    <script>
+      new TradingView.widget({
+        "width": "100%",
+        "height": 400,
+        "symbol": "BINANCE:BTCUSDT",
+        "interval": "1",
+        "timezone": "Etc/UTC",
+        "theme": "dark",
+        "style": "1",
+        "locale": "de",
+        "container_id": "tradingview_chart"
+      });
+    </script>
+  </div>
+
+  <h2>🜂 trade</h2>
+  <div id="voiceContainer"></div>
+
+  <h2>📊 Trades history</h2>
+  <table id="voicesTable">
+    <thead>
+      <tr>
+        <th onclick="sortTable(0)">Ticker</th>
+        <th onclick="sortTable(1)">Entry</th>
+        <th onclick="sortTable(2)">Leverage</th>
+        <th onclick="sortTable(3)">Size</th>
+        <th onclick="sortTable(4)">Liq</th>
+        <th onclick="sortTable(5)">PnL</th>
+        <th onclick="sortTable(6)">ROI</th>
+        <th onclick="sortTable(7)">Time</th>
+        <th onclick="sortTable(8)">buy / sell</th>
+        <th>🔥</th>
+        <th>Aktion</th>
+      </tr>
+    </thead>
+    <tbody id="voicesBody"></tbody>
+  </table>
+
+  <script>
+    let voices = [];
+
+    function getFlameSVG(roi, direction) {
+      const color = direction === "LONG" ? "#00ff66" : "#ff0033";
+      return `
+        <svg class="flame" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <style>
+            .pulse {
+              animation: pulse 1.2s infinite;
+            }
+            @keyframes pulse {
+              0% { transform: scale(1); opacity: 1; }
+              50% { transform: scale(1.2); opacity: 0.6; }
+              100% { transform: scale(1); opacity: 1; }
+            }
+          </style>
+          <path class="pulse" fill="${color}" d="M12 2C10 6 6 8 6 13c0 3.3 2.7 6 6 6s6-2.7 6-6c0-5-4-7-6-11z"/>
+        </svg>
+      `;
+    }
+
+    window.onload = function() {
+      const stored = localStorage.getItem("voices");
+      if (stored) {
+        voices = JSON.parse(stored);
+        voices.forEach(v => {
+          renderVoice(v);
+          renderTableRow(v);
+        });
+      }
+    };
+
+    function saveVoice() {
+      const direction = document.getElementById("direction").value;
+      if (direction !== "LONG" && direction !== "SHORT") {
+        alert("Nur LONG oder SHORT erlaubt.");
+        return;
+      }
+
+      const data = {
+        username: document.getElementById("username").value,
+        entry: document.getElementById("entry").value,
+        leverage: document.getElementById("leverage").value,
+        size: document.getElementById("size").value,
+        liq: document.getElementById("liq").value,
+        pnl: document.getElementById("pnl").value,
+        roi: document.getElementById("roi").value,
+        direction: direction,
+        time: new Date().toLocaleString("de-DE", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        })
+      };
+      voices.push(data);
+      updateLocalStorage();
+      renderVoice(data);
+      renderTableRow(data);
+    }
+
+    function renderVoice(data) {
+      const box = document.createElement("div");
+      box.className = `voice-box ${data.direction === "LONG" ? "long" : "short"}`;
+      box.innerHTML = `
+        <strong>${data.direction === "LONG" ? "🟢🜂" : "🔴🜂"} ${data.username}</strong><br>
+        Entry: ${data.entry} | Leverage: ${data.leverage}x | Size: ${data.size}<br>
+        Liq: ${data.liq} | PnL: ${data.pnl} | ROI: ${data.roi}%<br>
+        Richtung: ${data.direction}<br>
+        <small>${data.time}</small>
+      `;
+      document.getElementById("voiceContainer").appendChild(box);
+    }
+
+    function renderTableRow(data) {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${data.ticker}</td>
+        <td>${data.entry}</td>
+        <td>${data.leverage}x</td>
+        <td>${data.size}</td>
+        <td>${data.liq}</td>
+        <td>${data.pnl}</td>
+        <td>${data.roi}%</td>
+        <td>${data.time}</td>
+        <td style="background-color:${data.direction === 'LONG' ? '#004d00' : '#660000'}; color:#fff;">
+          ${data.direction}
+        </td>
+        <td>${getFlameSVG(data.roi, data.direction)}</td>
+        <td><button onclick="deleteRow(this)">❌</button></td>
+      `;
+      document.getElementById("voicesBody").appendChild(row);
+    }
+
+    function deleteRow(btn) {
+      const row = btn.closest("tr");
+      const index = row.rowIndex - 1;
+      voices.splice(index, 1);
+      updateLocalStorage();
+      row.remove();
+      document.getElementById("voiceContainer").children[index]?.remove();
+    }
+
+    function updateLocalStorage() {
+      localStorage.setItem("voices", JSON.stringify(voices));
+    }
+
+    function exportVoices() {
+      const blob = new Blob([JSON.stringify(voices, null, 2)], { type: "application/json
+
+        function exportVoices() {
+      const blob = new Blob([JSON.stringify(voices, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "codex-stimmen.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function restoreVoices(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const restored = JSON.parse(e.target.result);
+          if (!Array.isArray(restored)) throw new Error("Ungültiges Format");
+          voices = restored;
+          updateLocalStorage();
+          document.getElementById("voiceContainer").innerHTML = "";
+          document.getElementById("voicesBody").innerHTML = "";
+          voices.forEach(v => {
+            renderVoice(v);
+            renderTableRow(v);
+          });
+        } catch (err) {
+          alert("Fehler beim Wiederherstellen: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function sortTable(n) {
+      const table = document.getElementById("voicesTable");
+      let switching = true;
+      let dir = "asc";
+      let switchcount = 0;
+      while (switching) {
+        switching = false;
+        const rows = table.rows;
+        for (let i = 1; i < rows.length - 1; i++) {
+          let shouldSwitch = false;
+          const x = rows[i].getElementsByTagName("TD")[n];
+          const y = rows[i + 1].getElementsByTagName("TD")[n];
+          const xVal = x.textContent || x.innerText;
+          const yVal = y.textContent || y.innerText;
+          if (dir === "asc" && xVal > yVal) {
+            shouldSwitch = true;
+            break;
+          } else if (dir === "desc" && xVal < yVal) {
+            shouldSwitch = true;
+            break;
+          }
+        }
+        if (shouldSwitch) {
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+          switchcount++;
+        } else {
+          if (switchcount === 0 && dir === "asc") {
+            dir = "desc";
+            switching = true;
+          }
+        }
+      }
+    }
+  </script>
+<script type="module" src="main.js"></script>
+</body>
+</html>
+</body>
+</html>                                                        
