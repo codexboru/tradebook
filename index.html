@@ -66,12 +66,17 @@
       <option value="LONG">LONG</option>
       <option value="SHORT">SHORT</option>
     </select>
-  <button onclick="saveVoiceHandler()">Stimme speichern 💾</button>
+
+
+    
 <button onclick="exportVoicesHandler()">Export JSON ✉️</button>
 
 <label for="jsonUpload" style="padding:6px 12px; background:#222; color:#eee; border:1px solid #444; cursor:pointer;">
   🜁 Upload JSON file
 </label>
+
+
+    
 <input type="file" id="jsonUpload" accept=".json" onchange="restoreVoicesHandler(this)" style="display:none;">
 
     
