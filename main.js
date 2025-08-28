@@ -26,7 +26,7 @@ window.saveVoiceHandler = function() {
   }
 
   const data = {
-    username: document.getElementById("username").value,
+    ticker: document.getElementById("username").value,
     entry: document.getElementById("entry").value,
     leverage: document.getElementById("leverage").value,
     size: document.getElementById("size").value,
