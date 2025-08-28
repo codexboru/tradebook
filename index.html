@@ -55,7 +55,7 @@
   <h1>🜂 Stimme speichern 💾</h1>
 
   <div>
-    <input type="text" id="username" placeholder="Username">
+    <input type="text" id="ticker" placeholder="ticker">
     <input type="text" id="entry" placeholder="Entry">
     <input type="text" id="leverage" placeholder="Leverage">
     <input type="text" id="size" placeholder="Size">
@@ -116,7 +116,7 @@
   <table id="voicesTable">
     <thead>
       <tr>
-        <th onclick="sortTable(0)">Ticker</th>
+        <th onclick="sortTable(0)">ticker</th>
         <th onclick="sortTable(1)">Entry</th>
         <th onclick="sortTable(2)">Leverage</th>
         <th onclick="sortTable(3)">Size</th>
@@ -173,7 +173,7 @@
       }
 
       const data = {
-        username: document.getElementById("username").value,
+        ticker: document.getElementById("ticker").value,
         entry: document.getElementById("entry").value,
         leverage: document.getElementById("leverage").value,
         size: document.getElementById("size").value,
@@ -181,7 +181,7 @@
         pnl: document.getElementById("pnl").value,
         roi: document.getElementById("roi").value,
         direction: direction,
-        time: new Date().toLocaleString("de-DE", {
+        time: new Date().toLocaleString("en-EN", {
           day: "2-digit",
           month: "2-digit",
           year: "numeric",
@@ -200,7 +200,7 @@
       const box = document.createElement("div");
       box.className = `voice-box ${data.direction === "LONG" ? "long" : "short"}`;
       box.innerHTML = `
-        <strong>${data.direction === "LONG" ? "🟢🜂" : "🔴🜂"} ${data.username}</strong><br>
+        <strong>${data.direction === "LONG" ? "🟢🜂" : "🔴🜂"} ${data.ticker}</strong><br>
         Entry: ${data.entry} | Leverage: ${data.leverage}x | Size: ${data.size}<br>
         Liq: ${data.liq} | PnL: ${data.pnl} | ROI: ${data.roi}%<br>
         Richtung: ${data.direction}<br>
@@ -250,7 +250,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "codex-stimmen.json";
+      a.download = "csv.json";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
