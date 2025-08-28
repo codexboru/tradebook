@@ -13,7 +13,7 @@ export function renderVoice(data) {
   const box = document.createElement("div");
   box.className = `voice-box ${data.direction === "LONG" ? "long" : "short"}`;
   box.innerHTML = `
-    <strong>${data.direction === "LONG" ? "🟢🜂" : "🔴🜂"} ${data.username}</strong><br>
+    <strong>${data.direction === "LONG" ? "🟢🜂" : "🔴🜂"} ${data.ticker}</strong><br>
     Entry: ${data.entry} | Leverage: ${data.leverage}x | Size: ${data.size}<br>
     Liq: ${data.liq} | PnL: ${data.pnl} | ROI: ${data.roi}%<br>
     Richtung: ${data.direction}<br>
