@@ -10,12 +10,13 @@
       font-family: monospace;
       padding: 20px;
     }
-    input, select, button {
+    input, select, button, label {
       padding: 6px;
       margin: 4px;
       background-color: #222;
       color: #eee;
       border: 1px solid #444;
+      cursor: pointer;
     }
     .voice-box {
       border: 1px solid #555;
@@ -67,22 +68,18 @@
       <option value="SHORT">SHORT</option>
     </select>
 
+    <button onclick="saveVoiceHandler()">Stimme speichern 💾</button>
+    <button onclick="exportVoicesHandler()">Export JSON ✉️</button>
 
-    
-<button onclick="exportVoicesHandler()">Export JSON ✉️</button>
+    <label for="jsonUpload">🜁 Upload JSON file</label>
+    <input type="file" id="jsonUpload" accept=".json" onchange="restoreVoicesHandler(this)" style="display:none;">
+  </div>
 
-<label for="jsonUpload" style="padding:6px 12px; background:#222; color:#eee; border:1px solid #444; cursor:pointer;">
-  🜁 Upload JSON file
-</label>
-
-
-    
-<input type="file" id="jsonUpload" accept=".json" onchange="restoreVoicesHandler(this)" style="display:none;">
-
-    
   <p style="margin-bottom: 10px;">
-  <a href="https://codexboru.github.io/codexarkham" target="_blank" style="color:#00ccff; text-decoration:none; border:1px solid #444; padding:4px 8px; background-color:#222;">
-    ↗ CodexArkham ETH öffnen
+    <a href="https://codexboru.github.io/codexarkham" target="_blank" style="color:#00ccff; text-decoration:none; border:1px solid #444; padding:4px 8px; background-color:#222;">
+      ↗ CodexArkham ETH öffnen
+    </a>
+  </p>
   </a>
   &nbsp;&nbsp;
   <a href="https://codexboru.github.io/codex-initiation/" target="_blank" style="color:#ff66cc; text-decoration:none; border:1px solid #444; padding:4px 8px; background-color:#222;">
