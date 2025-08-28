@@ -7,7 +7,7 @@ import { renderVoice } from './voices.js';
 export function renderTableRow(data, index) {
   const row = document.createElement("tr");
   row.innerHTML = `
-    <td>${data.username}</td>
+    <td>${data.ticker}</td>
     <td>${data.entry}</td>
     <td>${data.leverage}x</td>
     <td>${data.size}</td>
