@@ -7,7 +7,7 @@ export function exportVoices() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "codexbtc.json";
+  a.download = "csv.json";
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
