@@ -2,7 +2,7 @@
 
 export let voices = [];
 
-// 🜁 Stimme speichern
+// 🜁 Stimme speichern 💾
 export function saveVoice(data) {
   voices.push(data);
   updateLocalStorage();
@@ -27,7 +27,7 @@ export function updateLocalStorage() {
   localStorage.setItem("voices", JSON.stringify(voices));
 }
 
-// 🜄 Stimme löschen (nach Index)
+// 🜄 Stimme löschen (nach Index) 🗑
 export function deleteVoice(index) {
   voices.splice(index, 1);
   updateLocalStorage();
